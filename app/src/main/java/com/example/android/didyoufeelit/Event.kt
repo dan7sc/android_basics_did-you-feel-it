@@ -30,9 +30,9 @@ class Event
 (eventTitle: String, eventNumOfPeople: String, eventPerceivedStrength: String) {
 
         /** Title of the earthquake event  */
-        val title: String = eventTitle
+        val title: String? = eventTitle
         /** Number of people who felt the earthquake and reported how strong it was  */
-        val numOfPeople: String = eventNumOfPeople
+        val numOfPeople: String? = eventNumOfPeople
         /** Perceived strength of the earthquake from the people's responses  */
-        val perceivedStrength: String = eventPerceivedStrength
+        val perceivedStrength: String? = eventPerceivedStrength
 }

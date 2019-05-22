@@ -21,11 +21,8 @@ import android.util.Log
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.*
 
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
@@ -122,7 +119,7 @@ object Utils {
         val output = StringBuilder()
         if (inputStream != null) {
             val inputStreamReader = InputStreamReader(inputStream, Charset.forName("UTF-8"))
-            val reader = BufferedReader(inputStreamReader)
+            val reader = BufferedReader(inputStreamReader as Reader?)
             var line: String? = reader.readLine()
             while (line != null) {
                 output.append(line)

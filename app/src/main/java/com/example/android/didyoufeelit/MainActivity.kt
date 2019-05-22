@@ -15,6 +15,8 @@
  */
 package com.example.android.didyoufeelit
 
+import android.annotation.SuppressLint
+import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
@@ -31,18 +33,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Perform the HTTP request for earthquake data and process the response.
-        val earthquake: Event = Utils.fetchEarthquakeData(USGS_REQUEST_URL) as Event
-
-        // Update the information displayed to the user.
-        updateUi(earthquake)
+        // Create an {@link AsyncTask} to perform the HTTP request to the given URL
+        // on a background thread. When the result is received on the main UI thread,
+        // then update the UI.
+        val task = EarthquakeAsyncTask()
+        task.execute(USGS_REQUEST_URL)
     }
 
     /**
      * Update the UI with the given earthquake information.
      */
     private fun updateUi(earthquake: Event) {
-        val titleTextView = findViewById<View>(R.id.title) as TextView
+        val titleTextView: TextView = findViewById<View>(R.id.title) as TextView
         titleTextView.text = earthquake.title
 
         val tsunamiTextView: TextView = findViewById<View>(R.id.number_of_people) as TextView
@@ -50,6 +52,37 @@ class MainActivity : AppCompatActivity() {
 
         val magnitudeTextView: TextView = findViewById<View>(R.id.perceived_magnitude) as TextView
         magnitudeTextView.text = earthquake.perceivedStrength
+    }
+
+    /**
+     * [AsyncTask] to perform the network request on a background thread, and then
+     * update the UI with the first earthquake in the response.
+     */
+    @SuppressLint("StaticFieldLeak")
+    private inner class EarthquakeAsyncTask : AsyncTask<String, Void, Event?>() {
+        /**
+         * This method is invoked (or called) on a background thread, so we can perform
+         * long-running operations like making a network request.
+         *
+         * It is NOT okay to update the UI from a background thread, so we just return an
+         * [Event] object as the result.
+         */
+        override fun doInBackground(vararg urls: String): Event? {
+            return Utils.fetchEarthquakeData(urls[0])
+        }
+
+        /**
+         * This method is invoked on the main UI thread after the background work has been
+         * completed.
+         *
+         * It IS okay to modify the UI within this method. We take the [Event] object
+         * (which was returned from the doInBackground() method) and update the views on the screen.
+         */
+        override fun onPostExecute(result: Event?) {
+            if (result != null) {
+                updateUi(result)
+            }
+        }
     }
 
     companion object {
